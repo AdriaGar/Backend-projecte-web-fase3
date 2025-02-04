@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "adria-garcia",
+  "private_key_id": "0644dbe1986868f3acd9cf985180114cd9c03cb8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDkw1pTy6z8Kf4d\nAfdLtGX6fgKRgjPqHKEM1AL1cmSekB+e5SiKiJtUKcf9i0sAFcI9kPk9t3GYz1mp\nRfYC8kECM1rjbySxcZ/HgPWRklJ9AmXJ40vRpAAJy/ayNpFtug5ST2yF4wqyUVQw\nFgPLjempU8eGooSFHSGxR7xuu8V0c3pyFSdDfR7m0UyYlOns49x47BW7tosxQi4R\n0ylH0fV40M40vBDD8T8PS9/HrtUl3hVRMsp6aCfLoyy6494aHHk0U4ejhQro6kDD\nNlZzt2fGsjRn5lUKr1gfgyo8s5D2iDKXxmDD8lC5amsfCs1+p2ZO7INBYUFpZCRO\nisxTjWmfAgMBAAECggEAF5Ub5q+EcapSi+L7/03lhWEgGqf1ehjhcVUZyPu167Kn\nz9WHzGAwwwhbmYOWg7e6gmZDi10x1LLrZ0vTBJK8qOFqaS+39KLl+ccNiagv4Lsy\nixFna4Egj+H62HxPmaQofcu6QEMbgy5nI13hnkZO5CnC09pFFwPdyUy/3Bp3TH25\nI+4dA+xo4+uNjeq+I4i8I2zHYN03fSPSItuaozbad2deKKLQjC81t1IYa3a1UAVg\nrHixuOmI1gvu/2Volegmr3YxZ67Ei4RC1vULCsjl95gXvlHhIQhG9JeybO9B9ZKG\n4Ctljaf3GfLFP62yyk4GWds9z3RecPBEI435cDkHoQKBgQD4tFU2cc+AnEaOcPah\ntREYbXeyjfBdn4XF7sQG8vFqy04GbRaTAN5GK7VTGxhGf80Vv3CSSEZhAjJLUP0z\nMtRMwjK12CAKJqsOFo1FL3bktFEYuYrMR90SA30+qPMOaViW4PftLo3V0Cb41six\nw+mONvg7AYuotYb4fvu58ALkowKBgQDreUTUs50RBDJ5SWgrfDk9JG3Dg7Dx6dLd\nzfaF9QduZoHP0BjxJNhlA2y57yjxhRLxQHdC5XdYw4AmQFsSwQ8CedMu8DghQnGU\nxOp4MD9FXVPyXOdNPFOQCsuadr0Q1+QcJHTPF2GSVPVEamaxyFoWPck/z5c61PR4\n0IovGor61QKBgB7VVJ8sWvpp5YFxVdJUfWsW3zkeyccBqPcSE/F8mxuPWvwG+D5/\nZA81CgTkngzXeViR5GXuWfNa71tRDiMT0Sg3B0xuIALCKoDToO4L5WSTSl6TWjbb\nTfgWwKdNEN0fiGEkQPiBxgnVBY/iKP2I+WKtQ/ckyOjAoJwcOh8iN2mbAoGAVd5s\nPlCdl2X7bgVZ6nmreeN9741nimBlWCNSofj/07+n2PufDNkN3JBKJufS+3g2tyl2\nFDwPsJvicJCJZaZnbdS1MWnCXkaXmtPQWTHm8Mme4kQEyUKVinKVWuev/KNt+OFG\ng3qYRz+aDW/rsStJxtCTQiTWlkqwOBp8Ob8pLV0CgYAQbyOLhKN/2+095ElsaMWu\nXtN1T4nAPBR+hh+QYmhydYiIrv5lbXwuSDCjL83/N6zkkBSsG48eekwZTMv04M3b\nz0enIJseYyH73WO07aBFVsqUVqUoxfe1uMnmezgvmYWuR2cWm9paWrHpRtv81eEw\n4l+vR2k13bbro24LF0LPPQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@adria-garcia.iam.gserviceaccount.com",
+  "client_id": "104469607195741220504",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40adria-garcia.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
