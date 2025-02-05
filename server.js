@@ -2,26 +2,29 @@ const express = require('express');
 const cors = require('cors');
 var admin = require("firebase-admin");
 const jp = require('jsonpath');
-var serviceAccount = require("oscarmollinedoechevarriadam1-firebase-adminsdk-fbsvc-5b118456bb.json");
+var serviceAccount = require("./KeyFirebase.json");
 var nodemailer = require('nodemailer');
-const db = admin.firestore();
+const app = express();
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
+app.use(cors({
+    origin: 'http://localhost:4200'
+}));
+app.use(express.json());
+const port = 3080;
+
 
 var transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'localhost',
     auth: {
         user: '',
         pass: ''
     }
 });
+const db = admin.firestore();
+const dbC = db.collection('usuaris');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const port = 3080;
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
@@ -39,4 +42,19 @@ app.post('/correu', async (req, res) => {
         subject: 'Correu recuperacio compte',
         text: 'aixo es un correu per actualitzar la teva compte'
     };
+
+    await transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('correu enviat: ' + info.response);
+        }
+    });
+});
+
+app.post('/usuaris/push', async (req, res) => {
+    let usuario = req.body
+    let nomDocument = usuario.usuari
+    let dades = usuario.dades
+    let pujada = await dbC.doc(nomDocument).set(dades)
 });
