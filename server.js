@@ -58,3 +58,36 @@ app.post('/usuaris/push', async (req, res) => {
     let dades = usuario.dades
     let pujada = await dbC.doc(nomDocument).set(dades)
 });
+
+app.get('/usuaris/informaciopersonal',async (req, res) => {
+    const documentid = req.query.usuariId;
+
+    const nomDocument = await dbC.doc(documentid).get();
+
+    const usuariData = document.data();
+    const usuari = ({
+        CVVTarjeta: usuariData.CVVTarjeta,
+        DNI: usuariData.DNI,
+        apellido: usuariData.apellido,
+        correo: usuariData.correo,
+        cumpleaños: usuariData.cumpleaños,
+        direccion: usuariData.direccion,
+        fechaTarjeta: usuariData.fechaTarjeta,
+        nombre: usuariData.nombre,
+        numeroTarjeta: usuariData.numeroTarjeta,
+        telefono: usuariData.telefono,
+        titularTarjeta: usuariData.titularTarjeta
+    });
+    res.json(usuari);
+    console.log("Dades:" + usuari);
+
+});
+app.put('/usuaris/informaciopersonal', async (req, res) => {
+    const usuario = req.body;
+    const documentid = usuario.usuario;
+
+    await dbC.doc(documentid).set(usuario);
+    res.send('Datos actualizados correctamente');
+    console.log('Datos actualizados:', usuario);
+
+});
