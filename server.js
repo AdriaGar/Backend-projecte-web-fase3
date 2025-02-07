@@ -59,27 +59,31 @@ app.post('/usuaris/push', async (req, res) => {
     let pujada = await dbC.doc(nomDocument).set(dades)
 });
 
-app.get('/usuaris/informaciopersonal',async (req, res) => {
-    const documentid = req.query.usuariId;
+app.get('/usuaris/informaciopersonal/:id/:passwd',async (req, res) => {
+    const documentid = req.params.id;
 
-    const nomDocument = await dbC.doc(documentid).get();
+    const document = await dbC.doc(documentid).get();
 
+    var usuari = ({})
     const usuariData = document.data();
-    const usuari = ({
-        CVVTarjeta: usuariData.CVVTarjeta,
-        DNI: usuariData.DNI,
-        apellido: usuariData.apellido,
-        correo: usuariData.correo,
-        cumpleaños: usuariData.cumpleaños,
-        direccion: usuariData.direccion,
-        fechaTarjeta: usuariData.fechaTarjeta,
-        nombre: usuariData.nombre,
-        numeroTarjeta: usuariData.numeroTarjeta,
-        telefono: usuariData.telefono,
-        titularTarjeta: usuariData.titularTarjeta
-    });
+    if (req.params.passwd === usuariData.contrasena) {
+        usuari = ({
+            nombre: usuariData.nombre,
+            apellido: usuariData.apellido,
+            DNI: usuariData.DNI,
+            correo: usuariData.correo,
+            cumpleaños: usuariData.cumpleaños,
+            direccion: usuariData.direccion,
+            telefono: usuariData.telefono,
+
+            //Datos de la tarjeta
+            fechaTarjeta: usuariData.fechaTarjeta,
+            numeroTarjeta: usuariData.numeroTarjeta,
+            titularTarjeta: usuariData.titularTarjeta,
+            CVVTarjeta: usuariData.CVVTarjeta
+        });
+    }
     res.json(usuari);
-    console.log("Dades:" + usuari);
 
 });
 app.put('/usuaris/informaciopersonal', async (req, res) => {
