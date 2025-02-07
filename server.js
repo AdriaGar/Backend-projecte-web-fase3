@@ -59,33 +59,48 @@ app.post('/usuaris/push', async (req, res) => {
     let pujada = await dbC.doc(nomDocument).set(dades)
 });
 
-app.get('/usuaris/informaciopersonal/:id/:passwd',async (req, res) => {
-    const documentid = req.params.id;
+app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
+    try {
+        const { id, passwd } = req.params; // Obtener parámetros de la URL
 
-    const document = await dbC.doc(documentid).get();
+        const document = await dbC.doc(id).get();
 
-    var usuari = ({})
-    const usuariData = document.data();
-    if (req.params.passwd === usuariData.contrasena) {
-        usuari = ({
-            nombre: usuariData.nombre,
-            apellido: usuariData.apellido,
-            DNI: usuariData.DNI,
-            correo: usuariData.correo,
-            cumpleaños: usuariData.cumpleaños,
-            direccion: usuariData.direccion,
-            telefono: usuariData.telefono,
+        if (!document.exists) {
+            return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        }
 
-            //Datos de la tarjeta
-            fechaTarjeta: usuariData.fechaTarjeta,
-            numeroTarjeta: usuariData.numeroTarjeta,
-            titularTarjeta: usuariData.titularTarjeta,
-            CVVTarjeta: usuariData.CVVTarjeta
-        });
+        const usuariData = document.data();
+
+        if (passwd !== usuariData.contrasena) {
+            return res.status(401).json({ success: false, message: "Contraseña incorrecta" });
+        }
+
+        const usuari = {
+            success: true,
+            user: {
+                nombre: usuariData.nombre,
+                apellido: usuariData.apellido,
+                DNI: usuariData.DNI,
+                correo: usuariData.correo,
+                cumpleaños: usuariData.cumpleaños,
+                direccion: usuariData.direccion,
+                telefono: usuariData.telefono,
+
+                // ⚠️ Datos sensibles, en producción deberían estar encriptados o no enviarse directamente
+                fechaTarjeta: usuariData.fechaTarjeta,
+                numeroTarjeta: usuariData.numeroTarjeta,
+                titularTarjeta: usuariData.titularTarjeta,
+                CVVTarjeta: usuariData.CVVTarjeta
+            }
+        };
+
+        res.json(usuari);
+    } catch (error) {
+        console.error("Error en la consulta:", error);
+        res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
-    res.json(usuari);
-
 });
+
 app.put('/usuaris/informaciopersonal', async (req, res) => {
     const usuario = req.body;
     const documentid = usuario.usuario;
