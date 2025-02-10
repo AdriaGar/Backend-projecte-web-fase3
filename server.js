@@ -88,13 +88,13 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 cesta: usuariData.cesta,
                 comandas: usuariData.comandas,
 
-                // ⚠️ Datos sensibles, en producción deberían estar encriptados o no enviarse directamente
                 fechaTarjeta: usuariData.fechaTarjeta,
                 numeroTarjeta: usuariData.numeroTarjeta,
                 titularTarjeta: usuariData.titularTarjeta,
                 CVVTarjeta: usuariData.CVVTarjeta
             }
         };
+        console.log(usuari.user.comandas)
 
         res.json(usuari);
     } catch (error) {
