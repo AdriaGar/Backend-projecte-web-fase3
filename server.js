@@ -82,9 +82,11 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 apellido: usuariData.apellido,
                 DNI: usuariData.DNI,
                 correo: usuariData.correo,
-                cumpleaños: usuariData.cumpleaños,
+                cumpleanos: usuariData.cumpleanos,
                 direccion: usuariData.direccion,
                 telefono: usuariData.telefono,
+                cesta: usuariData.cesta,
+                comandas: usuariData.comandas,
 
                 // ⚠️ Datos sensibles, en producción deberían estar encriptados o no enviarse directamente
                 fechaTarjeta: usuariData.fechaTarjeta,
@@ -101,12 +103,32 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
     }
 });
 
-app.put('/usuaris/informaciopersonal', async (req, res) => {
-    const usuario = req.body;
-    const documentid = usuario.usuario;
+app.put('/usuaris/push', async (req, res) => {
+    try {
+        const usuario = req.body;
+        const documentid = usuario.usuario; // ID del usuario en Firestore
+        console.log(usuario)
 
-    await dbC.doc(documentid).set(usuario);
-    res.send('Datos actualizados correctamente');
-    console.log('Datos actualizados:', usuario);
+        // ✅ Validar si el ID de usuario es válido
+        if (!documentid || typeof documentid !== 'string' || documentid.trim() === '') {
+            return res.status(400).json({ success: false, message: "ID de usuario no válido" });
+        }
 
+        const userRef = dbC.doc(documentid);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+            await userRef.set(usuario, { merge: true });
+            console.log('✅ Usuario actualizado:', usuario);
+            res.json({ success: true, message: "Usuario actualizado correctamente" });
+        } else {
+            await userRef.set(usuario);
+            console.log('✅ Usuario creado:', usuario);
+            res.json({ success: true, message: "Usuario creado correctamente" });
+        }
+    } catch (error) {
+        console.error('❌ Error al procesar la solicitud:', error);
+        res.status(500).json({ success: false, message: "Error interno del servidor" });
+    }
 });
+
