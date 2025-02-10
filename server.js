@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-var admin = require("firebase-admin");
-const jp = require('jsonpath');
-var serviceAccount = require("./KeyFirebase.json");
-var nodemailer = require('nodemailer');
+const admin = require('firebase-admin');
+const serviceAccount = require('./KeyFirebase.json');
+const nodemailer = require('nodemailer');
+
 const app = express();
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -31,20 +31,16 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
 
-app.get('/exemple', async (req, res) => {
-    const datos = { name : "paco", mail: 'paco@gmail.com'}
-    res.json(datos);
-});
 
 app.post('/mail', async (req, res) => {
     let usuari = req.body;
 
     const document = await dbC.doc(usuari.usuariid.trim()).get();
-    
+
     const dades = document.data();
-    
+
     console.log(dades)
-    
+
     let mailOptions = {
         from: 'BobbyCotxes@cotxesbobby.com',
         to: dades.correo,
@@ -120,21 +116,32 @@ app.post('/usuaris/recuperaciocont', async (req, res) => {
 })
 
 app.post('/usuaris/push', async (req, res) => {
-    let usuario = req.body
-    let nomDocument = usuario.usuari
-    let dades = usuario.dades
-    let pujada = await dbC.doc(nomDocument).set(dades)
+    let usuario = req.body;
+    let nomDocument = usuario.usuari;
+    let dades = usuario.dades;
+
+    if (!nomDocument) {
+        return res.status(400).send('ID del usuario no proporcionado');
+    }
+
+    try {
+        await dbC.doc(nomDocument).set(dades);
+        res.send('Usuario agregado correctamente');
+    } catch (error) {
+        console.error("Error al agregar usuario:", error);
+        res.status(500).send('Error al agregar usuario');
+    }
 });
 
 app.post('/usuaris/mailconfusr', async (req, res) => {
     let usuari = req.body;
-    
+
     console.log(usuari.usuariid)
 
     const document = await dbC.doc(usuari.usuariid).get();
 
     const dades = document.data();
-    
+
     console.log(dades)
 
     let mailOptions = {
@@ -195,36 +202,75 @@ app.put('/usuaris/confirmarusuari', async (req, res) => {
     let pujada = await dbC.doc(temp.usuari).update({usuariConfirmat: true})
 })
 
+app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
+    try {
+        const { id, passwd } = req.params; // Obtener parámetros de la URL
 
-app.get('/usuaris/informaciopersonal',async (req, res) => {
-    const documentid = req.query.usuariId;
+        const document = await dbC.doc(id).get();
 
-    const nomDocument = await dbC.doc(documentid).get();
+        if (!document.exists) {
+            return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        }
 
-    const usuariData = document.data();
-    const usuari = ({
-        CVVTarjeta: usuariData.CVVTarjeta,
-        DNI: usuariData.DNI,
-        apellido: usuariData.apellido,
-        correo: usuariData.correo,
-        cumpleaños: usuariData.cumpleaños,
-        direccion: usuariData.direccion,
-        fechaTarjeta: usuariData.fechaTarjeta,
-        nombre: usuariData.nombre,
-        numeroTarjeta: usuariData.numeroTarjeta,
-        telefono: usuariData.telefono,
-        titularTarjeta: usuariData.titularTarjeta
-    });
-    res.json(usuari);
-    console.log("Dades:" + usuari);
+        const usuariData = document.data();
 
+        if (passwd !== usuariData.contrasena) {
+            return res.status(401).json({ success: false, message: "Contraseña incorrecta" });
+        }
+
+        const usuari = {
+            success: true,
+            user: {
+                nombre: usuariData.nombre,
+                apellido: usuariData.apellido,
+                DNI: usuariData.DNI,
+                correo: usuariData.correo,
+                cumpleanos: usuariData.cumpleanos,
+                direccion: usuariData.direccion,
+                telefono: usuariData.telefono,
+                cesta: usuariData.cesta,
+                comandas: usuariData.comandas,
+
+                fechaTarjeta: usuariData.fechaTarjeta,
+                numeroTarjeta: usuariData.numeroTarjeta,
+                titularTarjeta: usuariData.titularTarjeta,
+                CVVTarjeta: usuariData.CVVTarjeta
+            }
+        };
+        console.log(usuari.user.comandas)
+
+        res.json(usuari);
+    } catch (error) {
+        console.error("Error en la consulta:", error);
+        res.status(500).json({ success: false, message: "Error interno del servidor" });
+    }
 });
-app.put('/usuaris/informaciopersonal', async (req, res) => {
-    const usuario = req.body;
-    const documentid = usuario.usuario;
 
-    await dbC.doc(documentid).set(usuario);
-    res.send('Datos actualizados correctamente');
-    console.log('Datos actualizados:', usuario);
+app.put('/usuaris/push', async (req, res) => {
+    try {
+        const usuario = req.body;
+        const documentid = usuario.usuario; // ID del usuario en Firestore
+        console.log(usuario)
 
+        // ✅ Validar si el ID de usuario es válido
+        if (!documentid || typeof documentid !== 'string' || documentid.trim() === '') {
+            return res.status(400).json({ success: false, message: "ID de usuario no válido" });
+        }
+
+        const userRef = dbC.doc(documentid);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+            await userRef.set(usuario, { merge: true });
+            console.log('✅ Usuario actualizado:', usuario);
+            res.json({ success: true, message: "Usuario actualizado correctamente" });
+        } else {
+            await userRef.set(usuario);
+            console.log('✅ Usuario creado:', usuario);
+            res.json({ success: true, message: "Usuario creado correctamente" });
+        }
+    } catch (error) {
+        console.error('❌ Error al procesar la solicitud:', error);
+        res.status(500).json({ success: false, message: "Error interno del servidor" });
+    }
 });
