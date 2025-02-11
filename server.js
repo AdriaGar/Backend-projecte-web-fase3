@@ -231,6 +231,8 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 correo: usuariData.correo,
                 cumpleanos: usuariData.cumpleanos,
                 direccion: usuariData.direccion,
+                clauUnica: usuariData.clauUnica,
+                usuariConfirmat: usuariData.usuariConfirmat,
                 telefono: usuariData.telefono,
                 cesta: usuariData.cesta,
                 comandas: usuariData.comandas,
