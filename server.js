@@ -31,6 +31,10 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
 
+app.get('/exemple', async (req, res) => {
+    const datos = { name : "paco", mail: 'paco@gmail.com'}
+    res.json(datos);
+});
 
 app.post('/mail', async (req, res) => {
     let usuari = req.body;
@@ -38,9 +42,9 @@ app.post('/mail', async (req, res) => {
     const document = await dbC.doc(usuari.usuariid.trim()).get();
 
     const dades = document.data();
-
+    
     console.log(dades)
-
+    
     let mailOptions = {
         from: 'BobbyCotxes@cotxesbobby.com',
         to: dades.correo,
@@ -135,13 +139,13 @@ app.post('/usuaris/push', async (req, res) => {
 
 app.post('/usuaris/mailconfusr', async (req, res) => {
     let usuari = req.body;
-
+    
     console.log(usuari.usuariid)
 
     const document = await dbC.doc(usuari.usuariid).get();
 
     const dades = document.data();
-
+    
     console.log(dades)
 
     let mailOptions = {
