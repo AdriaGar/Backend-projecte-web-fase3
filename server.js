@@ -3,7 +3,7 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 const serviceAccount = require('./KeyFirebase.json');
 const nodemailer = require('nodemailer');
-const jp = require('jsonpath');
+
 const app = express();
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -31,12 +31,16 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
 
+app.get('/exemple', async (req, res) => {
+    const datos = { name : "paco", mail: 'paco@gmail.com'}
+    res.json(datos);
+});
 
 app.post('/mail', async (req, res) => {
     let usuari = req.body;
 
     const document = await dbC.doc(usuari.usuariid.trim()).get();
-    
+
     const dades = document.data();
     
     console.log(dades)
@@ -202,8 +206,6 @@ app.put('/usuaris/confirmarusuari', async (req, res) => {
     let pujada = await dbC.doc(temp.usuari).update({usuariConfirmat: true})
 })
 
-
-
 app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
     try {
         const { id, passwd } = req.params; // Obtener parámetros de la URL
@@ -247,6 +249,7 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
         res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
 });
+
 app.put('/usuaris/push', async (req, res) => {
     try {
         const usuario = req.body;
