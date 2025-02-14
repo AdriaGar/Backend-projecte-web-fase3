@@ -41,6 +41,10 @@ app.post('/mail', async (req, res) => {
 
     const document = await dbC.doc(usuari.usuariid.trim()).get();
 
+    if (document.exists) {
+
+
+
     const dades = document.data();
     
     console.log(dades)
@@ -143,6 +147,11 @@ app.post('/mail', async (req, res) => {
             console.log('correu enviat: ' + inf.response);
         }
     });
+    }
+    else{
+        console.log("usuari no existeix")
+        return res.status(403).send('Usuari no existeix')
+    }
 });
 
 app.get('/usuaris/recuperacio', async (req, res) => {
