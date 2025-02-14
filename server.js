@@ -74,7 +74,7 @@ app.post('/mail', async (req, res) => {
                 <h1 class="title">Bobby Cotxes: Recuperació compte</h1>
                 <p>Bon dia, ${dades.nombre},</p>
                 <p>Hem rebut una petició per canviar la contrasenya del teu compte d'usuari ${dades.nombre}.</p>
-                <p>Ho podràs recuperar amb el següent enllaç: <a href="http://localhost:4200/recuperacio">http://localhost:4200/recuperacio</a></p>
+                <p>Ho podràs recuperar amb el següent enllaç: <a href="http://localhost:4200/recuperacio">recuperacio</a></p>
                 <p>Clau recuperacio: ${dades.clauUnica}</p>
                 <p>Dada de enviament del correu: <span id="dataEnviament"></span></p>
 
