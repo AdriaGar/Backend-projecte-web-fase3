@@ -54,101 +54,132 @@ app.post('/mail', async (req, res) => {
         to: dades.correo,
         subject: 'Correu recuperació compte de ECommerce Bobby Cotxes',
         html: `<!DOCTYPE html>
-    <html lang="ca">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Bobby Cotxes: Recuperació compte</title>
-            <style>
-                body {
-                    font-family: 'Arial', sans-serif;
-                    background-color: #f9f9f9;
-                    margin: 0;
-                    padding: 0;
-                }
-                .container {
-                    width: 100%;
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
-                .header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-                .header h1 {
-                    color: #2c3e50;
-                    font-size: 28px;
-                    margin: 0;
-                }
-                .title {
-                    font-size: 22px;
-                    color: #2980b9;
-                    margin-bottom: 15px;
-                }
-                .content p {
-                    font-size: 16px;
-                    line-height: 1.5;
-                    color: #333;
-                }
-                .content a {
-                    color: #2980b9;
-                    text-decoration: none;
-                    font-weight: bold;
-                }
-                .footer {
-                    margin-top: 30px;
-                    text-align: center;
-                    font-size: 14px;
-                    color: #777;
-                }
-                .footer p {
-                    margin: 5px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Bobby Cotxes: Recuperació compte</h1>
-                </div>
-
-                <div class="content">
-                    <p>Bon dia, ${dades.nombre},</p>
-                    <p>Hem rebut una petició per canviar la contrasenya del teu compte d'usuari ${dades.nombre}.</p>
-                    <p>Per recuperar-ho, fes clic al següent enllaç:</p>
-                    <p><a href="http://localhost:4200/recuperacio">Recuperació compte</a></p>
-                    <p><strong>Clau de recuperació:</strong> ${dades.clauUnica}</p>
-                </div>
-
-                <div class="footer">
-                    <p>Data de enviament: <span id="dataEnviament"></span></p>
-                    <script>
-                        function dataA() {
-                            document.getElementById('dataEnviament').innerHTML = new Date().toUTCString();
-                        }
-                        dataA();
-                    </script>
-                    <p>&copy; 2025 Bobby Cotxes. Tots els drets reservats.</p>
-                </div>
+<html lang="ca">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bobby Cotxes: Recuperació de compte</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: black;
+                margin: 0;
+                padding: 0;
+                color: white;
+            }
+            .container {
+                width: 100%;
+                max-width: 600px;
+                margin: 30px auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .header h1 {
+                color: red;
+                font-size: 28px;
+                margin: 0;
+            }
+            .title {
+                font-size: 22px;
+                color: #2980b9;
+                margin-bottom: 15px;
+            }
+            .content p {
+                font-size: 16px;
+                line-height: 1.5;
+                color: #333;
+            }
+            .content a {
+                color: red;
+                text-decoration: none;
+                font-weight: bold;
+                border: 2px solid red;
+                padding: 10px 20px;
+                border-radius: 5px;
+                display: inline-block;
+                margin-top: 15px;
+                transition: background-color 0.3s ease;
+            }
+            .content a:hover {
+                background-color: red;
+                color: white;
+            }
+            .footer {
+                margin-top: 30px;
+                text-align: center;
+                font-size: 14px;
+                color: #777;
+            }
+            .footer p {
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Bobby Cotxes: Recuperació compte</h1>
             </div>
-        </body>
-    </html>`
+
+            <div class="content">
+                <p>Bon dia, ${dades.nombre},</p>
+                <p>Hem rebut una petició per canviar la contrasenya del teu compte d'usuari ${dades.nombre}.</p>
+                <p>Per recuperar-ho, fes clic al següent enllaç:</p>
+                <p><a href="http://localhost:4200/recuperacio">Recuperació compte</a></p>
+                <p><strong>Clau de recuperació:</strong> ${dades.clauUnica}</p>
+            </div>
+
+            <div class="footer">
+                <p>Data de enviament: <span id="dataEnviament"></span></p>
+                <script>
+                    window.onload = function() {
+                        let data = new Date();
+                        let any = data.getFullYear()
+                        let mes = data.getMonth() + 1
+                        let dia = data.getDate()
+                        let hora = data.getHours() % 12
+                        let minuts = data.getMinutes()
+                        
+                        if (hora === 0){
+                            hora = 12
+                            minuts = minuts + " AM"
+                        }
+                        
+                        if (hora >= 12){
+                            minuts = minuts + " PM"
+                        }
+                        else{
+                            minuts = minuts + " AM"    
+                        }
+                    
+                        document.getElementById('dataEnviament').innerHTML = dia + "/" + mes + "/" + any + " " + hora + ":" + minuts
+                        document.getElementById('AnyDRETS').innerHTML = any
+                    }
+                </script>
+                <p>&copy; <span id="AnyDRETS"></span> Bobby Cotxes. Tots els drets reservats.</p>
+            </div>
+        </div>
+    </body>
+</html>`
+            
+            
     }
 
 
-    await transporter.sendMail(mailOptions, function (error, inf) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('correu enviat: ' + inf.response);
-        }
-    });
-    }
-    else{
+        await transporter.sendMail(mailOptions, function (error, inf) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('correu enviat: ' + inf.response);
+            }
+        });
+    } else {
         console.log("usuari no existeix")
         return res.status(403).send('Usuari no existeix')
     }
@@ -210,98 +241,119 @@ app.post('/usuaris/mailconfusr', async (req, res) => {
         to: dades.correo,
         subject: 'Correu confirmacio nou compte de ECommerce Bobby Cotxes',
         html: `<!DOCTYPE html>
-    <html lang="ca">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Bobby Cotxes: Confirmar nou compte</title>
-            <style>
-                body {
-                    font-family: 'Arial', sans-serif;
-                    background-color: #f9f9f9;
-                    margin: 0;
-                    padding: 0;
-                }
-                .container {
-                    width: 100%;
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
-                .header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-                .header h1 {
-                    color: #2c3e50;
-                    font-size: 28px;
-                    margin: 0;
-                }
-                .title {
-                    font-size: 22px;
-                    color: #2980b9;
-                    margin-bottom: 15px;
-                }
-                .content p {
-                    font-size: 16px;
-                    line-height: 1.5;
-                    color: #333;
-                }
-                .content a {
-                    color: #2980b9;
-                    text-decoration: none;
-                    font-weight: bold;
-                    border: 2px solid #2980b9;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    display: inline-block;
-                    margin-top: 15px;
-                    transition: background-color 0.3s ease;
-                }
-                .content a:hover {
-                    background-color: #2980b9;
-                    color: white;
-                }
-                .footer {
-                    margin-top: 30px;
-                    text-align: center;
-                    font-size: 14px;
-                    color: #777;
-                }
-                .footer p {
-                    margin: 5px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Bobby Cotxes: Confirmar nou compte</h1>
-                </div>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobby Cotxes: Confirmar nou compte</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: red;
+            font-size: 28px;
+            margin: 0;
+        }
+        .title {
+            font-size: 22px;
+            color: #2980b9;
+            margin-bottom: 15px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .content a {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+            border: 2px solid red;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+        .content a:hover {
+            background-color: red;
+            color: white;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+        .footer p {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bobby Cotxes: Confirmar nou compte</h1>
+        </div>
 
-                <div class="content">
-                    <p>Bon dia, ${dades.nombre},</p>
-                    <p>Benvingut a Bobby Cotxes, ${dades.nombre}!</p>
-                    <p>Per poder fer servir el teu compte, hauràs de confirmar clicant el següent enllaç:</p>
-                    <p><a href="http://localhost:4200/confirmacioCompte?usuari=${encodeURIComponent(dades.usuario)}">Confirmar compte</a></p>
-                </div>
+        <div class="content">
+            <p>Bon dia, ${dades.nombre},</p>
+            <p>Benvingut a Bobby Cotxes, ${dades.nombre}!</p>
+            <p>Per poder fer servir el teu compte, hauràs de confirmar clicant el següent enllaç:</p>
+            <p><a href="http://localhost:4200/confirmacioCompte?usuari=${encodeURIComponent(dades.usuario)}">Confirmar compte</a></p>
+        </div>
 
-                <div class="footer">
-                    <p>Data de enviament: <span id="dataEnviament"></span></p>
-                    <script>
-                        function dataA() {
-                            document.getElementById('dataEnviament').innerHTML = new Date().toUTCString();
-                        }
-                        dataA();
-                    </script>
-                    <p>&copy; 2025 Bobby Cotxes. Tots els drets reservats.</p>
-                </div>
-            </div>
-        </body>
-    </html>`
+        <div class="footer">
+            <p>Data de enviament: <span id="dataEnviament"></span></p>
+            <script>
+                window.onload = function() {
+                    let data = new Date();
+                    let any = data.getFullYear()
+                    let mes = data.getMonth() + 1
+                    let dia = data.getDate()
+                    let hora = data.getHours() % 12
+                    let minuts = data.getMinutes()
+
+                    if (hora === 0) {
+                        hora = 12
+                        minuts = minuts + " AM"
+                    }
+
+                    if (hora >= 12) {
+                        minuts = minuts + " PM"
+                    }
+                    else {
+                        minuts = minuts + " AM"
+                    }
+
+                    document.getElementById('dataEnviament').innerHTML = dia + "/" + mes + "/" + any + " " + hora + ":" + minuts
+                    document.getElementById('AnyDRETS').innerHTML = any
+                }
+            </script>
+            <p>&copy; <span id="AnyDRETS"></span> Bobby Cotxes. Tots els drets reservats.</p>
+        </div>
+    </div>
+</body>
+</html>
+`
     };
 
 
