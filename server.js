@@ -3,13 +3,15 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 const serviceAccount = require('./KeyFirebase.json');
 const nodemailer = require('nodemailer');
+const axios = require('axios')
+
 
 const app = express();
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: ['http://localhost:4200', 'https://www.carqueryapi.com']
 }));
 app.use(express.json());
 const port = 3080;
@@ -456,4 +458,9 @@ app.get('/usuari/conicidencies', async (req, res) => {
     } else {
         res.json({coin: true})
     }
+});
+
+app.get('/api/cotxes', async (req, res) => {
+    let api = await axios.get('https://www.carqueryapi.com/api/0.3/?cmd=getMakes')
+    res.json(api.data);
 });
