@@ -13,17 +13,24 @@ function initModels(sequelize) {
   var factura = _factura(sequelize, DataTypes);
   var factura_detall = _factura_detall(sequelize, DataTypes);
   var imatge = _imatge(sequelize, DataTypes);
+  
+  cotxe.belongsToMany(categoria, {
+    through: 'cotxe_categoria',
+    foreignKey: 'COTXE_ID',
+    as: 'categorias'
+  });
+  categoria.belongsToMany(cotxe, {
+    through: 'cotxe_categoria',
+    foreignKey: 'CATEGORIA_ID',
+    as: 'cotxes' 
+  });
+  cotxe.hasMany(factura_detall, { as: 'factura_detalls', foreignKey: 'ID_COTXE' });
+  factura_detall.belongsTo(cotxe, { as: 'ID_COTXE_cotxe', foreignKey: 'ID_COTXE' });
+  cotxe.hasMany(imatge, { as: 'imatges', foreignKey: 'COTXE_ID' });
+  imatge.belongsTo(cotxe, { as: 'COTXE', foreignKey: 'COTXE_ID' });
+  factura.hasMany(factura_detall, { as: 'factura_detalls', foreignKey: 'ID_FACTURA' });
+  factura_detall.belongsTo(factura, { as: 'ID_FACTURA_factura', foreignKey: 'ID_FACTURA' });
 
-  cotxe_categoria.belongsTo(categoria, { as: "CATEGORIum", foreignKey: "CATEGORIA_ID"});
-  categoria.hasMany(cotxe_categoria, { as: "cotxe_categoria", foreignKey: "CATEGORIA_ID"});
-  cotxe_categoria.belongsTo(cotxe, { as: "COTXE", foreignKey: "COTXE_ID"});
-  cotxe.hasMany(cotxe_categoria, { as: "cotxe_categoria", foreignKey: "COTXE_ID"});
-  factura_detall.belongsTo(cotxe, { as: "ID_COTXE_cotxe", foreignKey: "ID_COTXE"});
-  cotxe.hasMany(factura_detall, { as: "factura_detalls", foreignKey: "ID_COTXE"});
-  imatge.belongsTo(cotxe, { as: "COTXE", foreignKey: "COTXE_ID"});
-  cotxe.hasMany(imatge, { as: "imatges", foreignKey: "COTXE_ID"});
-  factura_detall.belongsTo(factura, { as: "ID_FACTURA_factura", foreignKey: "ID_FACTURA"});
-  factura.hasMany(factura_detall, { as: "factura_detalls", foreignKey: "ID_FACTURA"});
 
   return {
     categoria,

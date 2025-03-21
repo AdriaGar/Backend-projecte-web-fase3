@@ -476,3 +476,53 @@ app.get('/api/cotxes', async (req, res) => {
     let api = await axios.get('https://www.carqueryapi.com/api/0.3/?cmd=getMakes')
     res.json(api.data);
 });
+
+app.get('/db/cotxes', async (req, res) => {
+    let cotDEF = []
+
+    let cotxesT = await cotxe.findAll({
+        include: [
+            {
+                model: categoria,
+                as: 'categorias',
+                attributes: ['CATEGORIA_NOM'],
+            },
+            {
+                model: imatge,
+                as: 'imatges',
+                attributes: ['ID_IMATGE', 'RUTA']
+            }
+        ]
+    });
+
+    cotxesT.forEach(cotx => {
+        
+        let imatgs = []
+        let categ = []
+        
+        cotx.categorias.forEach(c => {
+            categ.push(c.CATEGORIA_NOM)
+        })
+        
+        cotx.imatges.forEach(imatge => {
+            imatgs.push(imatge.RUTA)
+        })
+        
+        console.log(imatgs)
+        console.log(categ)
+        
+        let cotxA =   {
+            id: cotx.COTXE_ID,
+            name: cotx.COTXE_NOM,
+            price: cotx.COTXE_PREU,
+            tags: categ,
+            offertext: cotx.COTXE_TEXT_OFERTA,
+            imgC: imatgs
+        }
+        
+        cotDEF.push(cotxA)
+    })
+    
+    console.log(cotDEF)
+    res.json(cotDEF)
+})
