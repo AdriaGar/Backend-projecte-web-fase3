@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const Sequelize = require('sequelize')
 const admin = require('firebase-admin');
 const serviceAccount = require('./KeyFirebase.json');
 const nodemailer = require('nodemailer');
 const axios = require('axios')
+const mysql = require('mysql2')
 
 
 const app = express();
@@ -31,6 +33,16 @@ const dbC = db.collection('usuaris');
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
+});
+
+const {crearConfigBaseDades} = require("./db.config")
+const db2 = crearConfigBaseDades();
+
+const {initModels} = require('./models/init-models');
+const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge} = initModels(db2);
+
+db2.sync().then(() => {
+    console.log("Drop and re-sync db")
 });
 
 app.get('/exemple', async (req, res) => {
