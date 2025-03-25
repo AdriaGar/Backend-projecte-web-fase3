@@ -13,7 +13,7 @@ function initModels(sequelize) {
   var factura = _factura(sequelize, DataTypes);
   var factura_detall = _factura_detall(sequelize, DataTypes);
   var imatge = _imatge(sequelize, DataTypes);
-  
+
   cotxe.belongsToMany(categoria, {
     through: 'cotxe_categoria',
     foreignKey: 'COTXE_ID',
@@ -22,7 +22,7 @@ function initModels(sequelize) {
   categoria.belongsToMany(cotxe, {
     through: 'cotxe_categoria',
     foreignKey: 'CATEGORIA_ID',
-    as: 'cotxes' 
+    as: 'cotxes'
   });
   cotxe.hasMany(factura_detall, { as: 'factura_detalls', foreignKey: 'ID_COTXE' });
   factura_detall.belongsTo(cotxe, { as: 'ID_COTXE_cotxe', foreignKey: 'ID_COTXE' });
