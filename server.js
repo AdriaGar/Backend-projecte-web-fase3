@@ -415,7 +415,6 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 usuariConfirmat: usuariData.usuariConfirmat,
                 telefono: usuariData.telefono,
                 cesta: usuariData.cesta,
-                comandas: usuariData.comandas,
 
                 fechaTarjeta: usuariData.fechaTarjeta,
                 numeroTarjeta: usuariData.numeroTarjeta,
@@ -423,7 +422,6 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 CVVTarjeta: usuariData.CVVTarjeta
             }
         };
-        console.log(usuari.user.comandas)
 
         res.json(usuari);
     } catch (error) {
@@ -507,9 +505,6 @@ app.get('/db/cotxes', async (req, res) => {
         cotx.imatges.forEach(imatge => {
             imatgs.push(imatge.RUTA)
         })
-        
-        console.log(imatgs)
-        console.log(categ)
         
         let cotxA =   {
             id: cotx.COTXE_ID,
