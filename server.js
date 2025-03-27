@@ -6,7 +6,18 @@ const serviceAccount = require('./KeyFirebase.json');
 const nodemailer = require('nodemailer');
 const axios = require('axios')
 const mysql = require('mysql2')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs');
 
+const storage = multer.diskStorage({
+    destination: ".\\..\\P2ProjecteBotigaA2\\public\\images",
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({storage: storage});
 
 const app = express();
 admin.initializeApp({
@@ -520,4 +531,75 @@ app.get('/db/cotxes', async (req, res) => {
     
     console.log(cotDEF)
     res.json(cotDEF)
+})
+
+app.get('/db/categories', async (req, res) => {
+    let categoriestext = []
+    
+    let categoriesNotext = await categoria.findAll({
+        attributes: ['CATEGORIA_NOM']
+    })
+    
+    categoriesNotext.forEach(cat => {
+        categoriestext.push(cat.CATEGORIA_NOM)
+    })
+    
+    res.json(categoriestext)
+})
+
+app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
+    let formulari = req.body
+
+    let pujarproducte = await cotxe.create({COTXE_NOM: formulari.nom,COTXE_PREU: formulari.preu, COTXE_TEXT_OFERTA: formulari.textoferta })
+
+    let idcotxe = await cotxe.findOne({
+        attributes: ['COTXE_ID'],
+        where: {
+            COTXE_NOM: formulari.nom
+        }
+    })
+
+
+    let categ = JSON.parse(formulari.categories)
+    
+    let categoriesid = await categoria.findAll({
+        attributes: ['CATEGORIA_ID','CATEGORIA_NOM'],
+    })
+
+    for (let cats of categ) {
+        let catego = categoriesid.find(c=> c.CATEGORIA_NOM === cats)
+        console.log(catego.CATEGORIA_ID)
+        await cotxe_categoria.create({COTXE_ID: idcotxe.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID})
+    }
+    
+    let rutas = []
+    
+    if (req.files){
+        let nimat = 1
+        
+        for (let file of req.files){
+            let v  = "v"+nimat
+            
+            let ruta = file.path.slice(29);
+
+            let renombrat = path.join('\\images',formulari.nom + v + file.path.slice(file.path.lastIndexOf('.')));
+
+            let rutaComp = ".\\..\\P2ProjecteBotigaA2\\public"
+
+            let rutabd = renombrat.replaceAll('\\','/')
+
+            await imatge.create({NUMERO_IMATGE: nimat, RUTA: rutabd, COTXE_ID: idcotxe.COTXE_ID})
+            
+            renombrat = path.join(rutaComp,renombrat)
+            
+            let renom = {og: ruta, nou: renombrat}
+            
+            rutas.push(renom)
+
+            nimat++
+        }
+    }
+    
+    res.json(rutas)
+
 })
