@@ -603,3 +603,34 @@ app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
     res.json(rutas)
 
 })
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'BOBBYSERVER',
+    password: 'BO!Rz-e#l_Ns-&^uPzyMC(BBY',
+    database: 'BOBBYCOTXES'
+});
+app.post('/historial/afegir-factura-detall',(req,res) => {
+    const {client_id,data_creacio,total_comanda,metode_pagament,id_factura,id_cotxe,quantitat,cotxes} = req.body;
+
+    const insercio1 = `INSERT INTO factura (client_id,data_creacio,total_comanda,metode_pagament) VALUES (?,?,?,?)`;
+    const insercio2 = `INSERT INTO factura_detall (id_factura,id_cotxe,quantitat) VALUES (?,?,?)`;
+
+    connection.execute(insercio1,[client_id,data_creacio,total_comanda,metode_pagament],(err,result) => {
+        if(err) {
+            console.log('Error en inserir factura',err);
+            return res.status(500).json({error: 'Error en inserir factura', detalls: err});
+        }
+        const factura_id = result.insertId;
+        console.log('Factura inserida correctament',result);
+    });
+
+    cotxes.forEach((cotxe) => {
+        connection.execute(insercio2, [factura_id, cotxe.id_cotxe, cotxe.quantitat], (err,result) => {
+            if (err) {
+                console.log('Error en inserir factura detalls:', err);
+            }
+            console.log('Detalls factura inserit correctament',result)
+        });
+    });
+});
