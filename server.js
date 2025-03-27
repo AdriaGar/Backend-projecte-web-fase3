@@ -610,6 +610,7 @@ const connection = mysql.createConnection({
     password: 'BO!Rz-e#l_Ns-&^uPzyMC(BBY',
     database: 'BOBBYCOTXES'
 });
+
 app.post('/historial/afegir-factura-detall',(req,res) => {
     const {client_id,data_creacio,total_comanda,metode_pagament,id_factura,id_cotxe,quantitat,cotxes} = req.body;
 

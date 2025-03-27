@@ -5,6 +5,7 @@ var _cotxe_categoria = require("./cotxe_categoria");
 var _factura = require("./factura");
 var _factura_detall = require("./factura_detall");
 var _imatge = require("./imatge");
+var _oferta = require("./oferta");
 
 function initModels(sequelize) {
   var categoria = _categoria(sequelize, DataTypes);
@@ -13,6 +14,7 @@ function initModels(sequelize) {
   var factura = _factura(sequelize, DataTypes);
   var factura_detall = _factura_detall(sequelize, DataTypes);
   var imatge = _imatge(sequelize, DataTypes);
+  var oferta = _oferta(sequelize, DataTypes);
 
   cotxe.belongsToMany(categoria, {
     through: 'cotxe_categoria',
@@ -30,6 +32,8 @@ function initModels(sequelize) {
   imatge.belongsTo(cotxe, { as: 'COTXE', foreignKey: 'COTXE_ID' });
   factura.hasMany(factura_detall, { as: 'factura_detalls', foreignKey: 'ID_FACTURA' });
   factura_detall.belongsTo(factura, { as: 'ID_FACTURA_factura', foreignKey: 'ID_FACTURA' });
+  oferta.belongsTo(cotxe, { as: "ID_COCHE_cotxe", foreignKey: "ID_COCHE"});
+  cotxe.hasMany(oferta, { as: "oferta", foreignKey: "ID_COCHE"});
 
 
   return {
@@ -39,6 +43,7 @@ function initModels(sequelize) {
     factura,
     factura_detall,
     imatge,
+    oferta,
   };
 }
 module.exports = initModels;
