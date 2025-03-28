@@ -481,10 +481,6 @@ app.get('/usuari/conicidencies', async (req, res) => {
     }
 });
 
-app.get('/api/cotxes', async (req, res) => {
-    let api = await axios.get('https://www.carqueryapi.com/api/0.3/?cmd=getMakes')
-    res.json(api.data);
-});
 
 app.get('/db/cotxes', async (req, res) => {
     let cotDEF = []
@@ -611,27 +607,28 @@ const connection = mysql.createConnection({
     database: 'BOBBYCOTXES'
 });
 
-app.post('/historial/afegir-factura-detall',(req,res) => {
-    const {client_id,data_creacio,total_comanda,metode_pagament,id_factura,id_cotxe,quantitat,cotxes} = req.body;
+app.post('/historial/afegir-factura-detall', (req, res) => {
+    const { client_id, data_creacio, total_comanda, metode_pagament, cotxes } = req.body;
 
-    const insercio1 = `INSERT INTO factura (client_id,data_creacio,total_comanda,metode_pagament) VALUES (?,?,?,?)`;
-    const insercio2 = `INSERT INTO factura_detall (id_factura,id_cotxe,quantitat) VALUES (?,?,?)`;
+    const insercio1 = `INSERT INTO factura (client_id, data_creacio, total_comanda, metode_pagament) VALUES (?,?,?,?)`;
+    const insercio2 = `INSERT INTO factura_detall (id_factura, id_cotxe, quantitat) VALUES (?,?,?)`;
 
-    connection.execute(insercio1,[client_id,data_creacio,total_comanda,metode_pagament],(err,result) => {
-        if(err) {
-            console.log('Error en inserir factura',err);
-            return res.status(500).json({error: 'Error en inserir factura', detalls: err});
+    connection.execute(insercio1, [client_id, data_creacio, total_comanda, metode_pagament], (err, result) => {
+        if (err) {
+            console.log('Error en inserir factura', err);
+            return res.status(500).json({ error: 'Error en inserir factura', detalls: err });
         }
         const factura_id = result.insertId;
-        console.log('Factura inserida correctament',result);
-    });
+        console.log('Factura inserida correctament', result);
 
-    cotxes.forEach((cotxe) => {
-        connection.execute(insercio2, [factura_id, cotxe.id_cotxe, cotxe.quantitat], (err,result) => {
-            if (err) {
-                console.log('Error en inserir factura detalls:', err);
-            }
-            console.log('Detalls factura inserit correctament',result)
+        cotxes.forEach((cotxe) => {
+            connection.execute(insercio2, [factura_id, cotxe.id_cotxe, cotxe.quantitat], (err, result) => {
+                if (err) {
+                    console.log('Error en inserir factura detalls:', err);
+                }
+                console.log('Detalls factura inserit correctament', result);
+            });
         });
+        res.status(200).json({ missatge: 'Factura i detalls inserits correctament' });
     });
 });
