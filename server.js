@@ -50,7 +50,7 @@ const {crearConfigBaseDades} = require("./db.config")
 const db2 = crearConfigBaseDades();
 
 const {initModels} = require('./models/init-models');
-const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge} = initModels(db2);
+const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge,oferta} = initModels(db2);
 
 db2.sync().then(() => {
     console.log("Drop and re-sync db")
@@ -496,35 +496,53 @@ app.get('/db/cotxes', async (req, res) => {
                 model: imatge,
                 as: 'imatges',
                 attributes: ['ID_IMATGE', 'RUTA']
+            },
+            {
+                model: oferta,
+                as: 'oferta',
+                attributes: ['OFERTA', 'INICIO_OFERTA', 'FINAL_OFERTA']
             }
         ]
     });
 
     cotxesT.forEach(cotx => {
-        
-        let imatgs = []
-        let categ = []
-        
+        let imatgs = [];
+        let categ = [];
+        let cantidadOferta = 0
+
         cotx.categorias.forEach(c => {
-            categ.push(c.CATEGORIA_NOM)
-        })
-        
+            categ.push(c.CATEGORIA_NOM);
+        });
+
         cotx.imatges.forEach(imatge => {
-            imatgs.push(imatge.RUTA)
-        })
-        
-        let cotxA =   {
+            imatgs.push(imatge.RUTA);
+        });
+
+        cotx.oferta.forEach(oferta => {
+            const inicioOferta = new Date(oferta.INICIO_OFERTA);
+            const finalOferta = new Date(oferta.FINAL_OFERTA);
+            const fechaActual = new Date();
+
+            if (finalOferta > fechaActual && inicioOferta < fechaActual) {
+                cantidadOferta += oferta.OFERTA / 100;
+            }
+        });
+
+
+        let cotxA = {
             id: cotx.COTXE_ID,
             name: cotx.COTXE_NOM,
             price: cotx.COTXE_PREU,
             tags: categ,
             offertext: cotx.COTXE_TEXT_OFERTA,
-            imgC: imatgs
-        }
-        
-        cotDEF.push(cotxA)
-    })
-    
+            imgC: imatgs,
+            oferta: cantidadOferta
+        };
+
+        cotDEF.push(cotxA);
+    });
+
+
     console.log(cotDEF)
     res.json(cotDEF)
 })
@@ -632,3 +650,5 @@ app.post('/historial/afegir-factura-detall', (req, res) => {
         res.status(200).json({ missatge: 'Factura i detalls inserits correctament' });
     });
 });
+
+
