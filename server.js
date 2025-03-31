@@ -426,6 +426,7 @@ app.get('/usuaris/informaciopersonal/:id/:passwd', async (req, res) => {
                 usuariConfirmat: usuariData.usuariConfirmat,
                 telefono: usuariData.telefono,
                 cesta: usuariData.cesta,
+                esAdmin: usuariData.esAdmin,
 
                 fechaTarjeta: usuariData.fechaTarjeta,
                 numeroTarjeta: usuariData.numeroTarjeta,
@@ -481,6 +482,10 @@ app.get('/usuari/conicidencies', async (req, res) => {
     }
 });
 
+app.get('/api/cotxes', async (req, res) => {
+    let api = await axios.get('https://www.carqueryapi.com/api/0.3/?cmd=getMakes')
+    res.json(api.data);
+});
 
 app.get('/db/cotxes', async (req, res) => {
     let cotDEF = []
@@ -632,3 +637,39 @@ app.post('/historial/afegir-factura-detall', (req, res) => {
         res.status(200).json({ missatge: 'Factura i detalls inserits correctament' });
     });
 });
+
+app.post('/srv/enviarformularisadisfacio',(req,res) => {
+    let resultat = req.body
+
+    let text1 = '----------Dades del client----------' + '\n'
+    let client = 'usuari: ' + resultat.usuari + '\n'
+    let nom = 'nom: ' + resultat.nom + '\n'
+    let cognom = 'cognom: ' + resultat.cognom + '\n'
+    let correu = 'correu: ' + resultat.correu + '\n'
+    let telefon = 'telefon: ' + resultat.telefon + '\n'
+    let temps = 'TEMPS DINS DEL FORMULARI: ' + resultat.tempsDins + '\n'
+    let text2 = '---------Resultat FORMULARI----------' + '\n'
+    let sadisfacioAmbElProducte = 'sadisfacio amb el producte: ' + resultat.grauSadisfacio + '\n'
+    let serveiAlClient = 'servei al client: ' + resultat.grauSadisfacioServei + '\n'
+    let recomenacio = 'Recomendacio de l empresa: ' + resultat.notaRecomenacio + '\n'
+    let comenatariPersonal = 'Comentari personal: ' + resultat.comentari
+
+    let enquesta = text1 + client + nom + cognom + correu + telefon + temps + text2 + sadisfacioAmbElProducte + serveiAlClient + recomenacio + comenatariPersonal
+
+    let rutaUsuari = 'C:\\Users\\Usuario\\IdeaProjects\\Backend-projecte-web-fase3\\public\\enquestes\\' + resultat.usuari
+    let rutaArxiu = rutaUsuari + '\\' + Date.now() + '.txt'
+
+    if (fs.existsSync(rutaUsuari)){
+       fs.writeFile(rutaArxiu,enquesta,(err)=>{
+           if (err) throw err;
+       })
+    }
+    else{
+        fs.mkdirSync(rutaUsuari);
+        fs.writeFile(rutaArxiu,enquesta,(err)=>{
+            if (err) throw err;
+        })
+    }
+
+})
+
