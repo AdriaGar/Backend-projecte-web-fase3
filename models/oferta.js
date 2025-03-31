@@ -20,11 +20,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     INICIO_OFERTA: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false
     },
     FINAL_OFERTA: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false
     }
   }, {
