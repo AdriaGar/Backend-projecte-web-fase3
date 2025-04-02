@@ -632,24 +632,38 @@ app.post('/historial/afegir-factura-detall', (req, res) => {
 });
 app.get('/obtenir-historial', async (req, res) => {
     try {
-        const facturaResult = await connection.promise().query('SELECT * FROM factura');
-        const facturaDetallResult = await connection.promise().query('SELECT * FROM factura_detall');
+        const historialResult = await connection.promise().query(`
+            SELECT 
+                f.FACTURA_ID,
+                f.CLIENT_ID AS CLIENT_NOM,
+                f.DATA_CREACIO,
+                c.COTXE_NOM,
+                fd.QUANTITAT,
+                CASE 
+                    WHEN o.ID_COCHE IS NOT NULL THEN 'Sí' 
+                    ELSE 'No' 
+                END AS EN_OFERTA
+            FROM factura_detall fd
+            JOIN factura f ON fd.ID_FACTURA = f.FACTURA_ID
+            JOIN cotxe c ON fd.ID_COTXE = c.COTXE_ID
+            LEFT JOIN oferta o ON c.COTXE_ID = o.ID_COCHE
+                AND f.DATA_CREACIO BETWEEN o.INICIO_OFERTA AND o.FINAL_OFERTA
+            ORDER BY f.DATA_CREACIO DESC
+        `);
 
-        const facturaRows = facturaResult[0];
-        const facturaDetallRows = facturaDetallResult[0];
+        const historialRows = historialResult[0];
 
-        console.log('Factures:', facturaRows);
-        console.log('Detalls de les factures:', facturaDetallRows);
+        console.log('Historial de compres:', historialRows);
 
         res.status(200).json({
-            factures: facturaRows,
-            detalls: facturaDetallRows
+            historial: historialRows
         });
     } catch (err) {
-        console.error("Error en consultar les factures o els detalls:", err);
-        res.status(500).json({ error: 'Error en consultar les dades', detalls: err });
+        console.error("Error en consultar l'historial de productes:", err);
+        res.status(500).json({ error: "Error en consultar les dades", detalls: err });
     }
 });
+
 
 
 
