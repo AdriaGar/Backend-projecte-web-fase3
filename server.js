@@ -1,56 +1,54 @@
+//plugins
 const express = require('express');
 const cors = require('cors');
 const Sequelize = require('sequelize')
 const admin = require('firebase-admin');
 const serviceAccount = require('./KeyFirebase.json');
 const nodemailer = require('nodemailer');
-const axios = require('axios')
-const mysql = require('mysql2')
-const multer = require('multer')
-const path = require('path')
+const axios = require('axios');
+const mysql = require('mysql2');
+const multer = require('multer');
+const path = require('path');
 const fs = require('fs');
+const {dadesPerAccedirServidorCorreu} = require('./mail.server.access.data') ;
+const port = 3080;
 
+//multer guardar arxius
 const storage = multer.diskStorage({
     destination: ".\\..\\P2ProjecteBotigaA2\\public\\images",
     filename: (req, file, cb) => {
         cb(null, file.originalname);
     }
 });
-
 const upload = multer({storage: storage});
 
+//bd relacional (Mysql)
+const {crearConfigBaseDades} = require("./db.config");
+const db2 = crearConfigBaseDades();
+const {initModels} = require('./models/init-models');
+const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge} = initModels(db2);
+const {dadesPerAccedirBD} = require('./db.acess.data')
+
+//firestone bd no relacional
 const app = express();
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
+const db = admin.firestore();
+const dbC = db.collection('usuaris');
+
+
 app.use(cors({
     origin: ['http://localhost:4200', 'https://www.carqueryapi.com']
 }));
+
 app.use(express.json());
-const port = 3080;
 
-
-var transporter = nodemailer.createTransport({
-    service: 'localhost',
-    port: 25,
-    secure: false,
-    auth: {
-        user: 'admin',
-        pass: 'admin'
-    }
-});
-const db = admin.firestore();
-const dbC = db.collection('usuaris');
+const transporter = dadesPerAccedirServidorCorreu();
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
-
-const {crearConfigBaseDades} = require("./db.config")
-const db2 = crearConfigBaseDades();
-
-const {initModels} = require('./models/init-models');
-const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge} = initModels(db2);
 
 db2.sync().then(() => {
     console.log("Drop and re-sync db")
@@ -549,68 +547,63 @@ app.get('/db/categories', async (req, res) => {
 })
 
 app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
-    let formulari = req.body
 
-    let pujarproducte = await cotxe.create({COTXE_NOM: formulari.nom,COTXE_PREU: formulari.preu, COTXE_TEXT_OFERTA: formulari.textoferta })
+    try {
+        let formulari = req.body
 
-    let idcotxe = await cotxe.findOne({
-        attributes: ['COTXE_ID'],
-        where: {
-            COTXE_NOM: formulari.nom
+        let pujarproducte = await cotxe.create({COTXE_NOM: formulari.nom,COTXE_PREU: formulari.preu, COTXE_TEXT_OFERTA: formulari.textoferta })
+
+        let idcotxe = await cotxe.findOne({
+            attributes: ['COTXE_ID'],
+            where: {
+                COTXE_NOM: formulari.nom
+            }
+        })
+
+
+        let categ = JSON.parse(formulari.categories)
+
+        let categoriesid = await categoria.findAll({
+            attributes: ['CATEGORIA_ID','CATEGORIA_NOM'],
+        })
+
+        for (let cats of categ) {
+            let catego = categoriesid.find(c=> c.CATEGORIA_NOM === cats)
+            console.log(catego.CATEGORIA_ID)
+            await cotxe_categoria.create({COTXE_ID: idcotxe.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID})
         }
-    })
 
+        let rutas = []
 
-    let categ = JSON.parse(formulari.categories)
-    
-    let categoriesid = await categoria.findAll({
-        attributes: ['CATEGORIA_ID','CATEGORIA_NOM'],
-    })
+        if (req.files){
+            let nimat = 1
 
-    for (let cats of categ) {
-        let catego = categoriesid.find(c=> c.CATEGORIA_NOM === cats)
-        console.log(catego.CATEGORIA_ID)
-        await cotxe_categoria.create({COTXE_ID: idcotxe.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID})
-    }
-    
-    let rutas = []
-    
-    if (req.files){
-        let nimat = 1
-        
-        for (let file of req.files){
-            let v  = "v"+nimat
-            
-            let ruta = file.path.slice(29);
+            for (let file of req.files){
+                let v  = "v"+nimat
 
-            let renombrat = path.join('\\images',formulari.nom + v + file.path.slice(file.path.lastIndexOf('.')));
+                let ruta = file.path.slice(29);
 
-            let rutaComp = ".\\..\\P2ProjecteBotigaA2\\public"
+                let renombrat = path.join('\\images',formulari.nom + v + file.path.slice(file.path.lastIndexOf('.')));
 
-            let rutabd = renombrat.replaceAll('\\','/')
+                let rutaComp = ".\\..\\P2ProjecteBotigaA2\\public"
 
-            await imatge.create({NUMERO_IMATGE: nimat, RUTA: rutabd, COTXE_ID: idcotxe.COTXE_ID})
-            
-            renombrat = path.join(rutaComp,renombrat)
-            
-            let renom = {og: ruta, nou: renombrat}
-            
-            rutas.push(renom)
+                let rutabd = renombrat.replaceAll('\\','/')
 
-            nimat++
+                await imatge.create({NUMERO_IMATGE: nimat, RUTA: rutabd, COTXE_ID: idcotxe.COTXE_ID})
+                
+                nimat++
+            }
         }
+
+        res.send(true)
     }
-    
-    res.json(rutas)
+    catch (err){
+        res.send(false)
+    }
 
 })
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'BOBBYSERVER',
-    password: 'BO!Rz-e#l_Ns-&^uPzyMC(BBY',
-    database: 'BOBBYCOTXES'
-});
+const connection = dadesPerAccedirBD
 
 app.post('/historial/afegir-factura-detall', (req, res) => {
     const { client_id, data_creacio, total_comanda, metode_pagament, cotxes } = req.body;
