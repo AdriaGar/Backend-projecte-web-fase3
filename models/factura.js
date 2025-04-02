@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     DATA_CREACIO: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: true
     },
     TOTAL_COMANDA: {
@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     METODE_PAGAMENT: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(25),
       allowNull: true
     }
   }, {

@@ -637,6 +637,29 @@ app.post('/historial/afegir-factura-detall', (req, res) => {
         res.status(200).json({ missatge: 'Factura i detalls inserits correctament' });
     });
 });
+app.get('/obtenir-historial', async (req, res) => {
+    try {
+        const facturaResult = await connection.promise().query('SELECT * FROM factura');
+        const facturaDetallResult = await connection.promise().query('SELECT * FROM factura_detall');
+
+        const facturaRows = facturaResult[0];
+        const facturaDetallRows = facturaDetallResult[0];
+
+        console.log('Factures:', facturaRows);
+        console.log('Detalls de les factures:', facturaDetallRows);
+
+        res.status(200).json({
+            factures: facturaRows,
+            detalls: facturaDetallRows
+        });
+    } catch (err) {
+        console.error("Error en consultar les factures o els detalls:", err);
+        res.status(500).json({ error: 'Error en consultar les dades', detalls: err });
+    }
+});
+
+
+
 
 app.post('/srv/enviarformularisadisfacio',(req,res) => {
     let resultat = req.body

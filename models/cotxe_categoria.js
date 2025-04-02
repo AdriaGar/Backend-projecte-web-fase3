@@ -21,6 +21,21 @@ module.exports = function(sequelize, DataTypes) {
     sequelize,
     tableName: 'cotxe_categoria',
     timestamps: false,
-    indexes: []
+    indexes: [
+      {
+        name: "FK_COTXE_CATEGORIA_COTXE_ID",
+        using: "BTREE",
+        fields: [
+          { name: "COTXE_ID" },
+        ]
+      },
+      {
+        name: "FK_COTXE_CATEGORIA_CATEGORIA_ID",
+        using: "BTREE",
+        fields: [
+          { name: "CATEGORIA_ID" },
+        ]
+      },
+    ]
   });
 };

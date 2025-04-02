@@ -18,6 +18,14 @@ module.exports = function(sequelize, DataTypes) {
     OFERTA: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    INICIO_OFERTA: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
+    FINAL_OFERTA: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     }
   }, {
     sequelize,
