@@ -603,7 +603,7 @@ app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
 
 })
 
-const connection = dadesPerAccedirBD
+const connection = dadesPerAccedirBD()
 
 app.post('/historial/afegir-factura-detall', (req, res) => {
     const { client_id, data_creacio, total_comanda, metode_pagament, cotxes } = req.body;
