@@ -25,7 +25,7 @@ const upload = multer({storage: storage});
 const {crearConfigBaseDades} = require("./db.config");
 const db2 = crearConfigBaseDades();
 const {initModels} = require('./models/init-models');
-const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge} = initModels(db2);
+const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge,oferta} = initModels(db2);
 const {dadesPerAccedirBD} = require('./db.acess.data')
 
 //firestone bd no relacional
@@ -48,12 +48,6 @@ const transporter = dadesPerAccedirServidorCorreu();
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
-
-const {crearConfigBaseDades} = require("./db.config")
-const db2 = crearConfigBaseDades();
-
-const {initModels} = require('./models/init-models');
-const {categoria,cotxe,cotxe_categoria,factura,factura_detall,imatge,oferta} = initModels(db2);
 
 db2.sync().then(() => {
     console.log("Drop and re-sync db")
