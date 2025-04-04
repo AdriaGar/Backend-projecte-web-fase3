@@ -551,9 +551,106 @@ app.get('/db/cotxes', async (req, res) => {
     });
 
 
-    console.log(cotDEF)
     res.json(cotDEF)
 })
+
+app.get('/db/ofertas', async (req, res) => {
+    let ofertas = await oferta.findAll();
+
+    res.json(ofertas)
+})
+
+app.delete('/db/del/ofertas/:id', async (req, res) => {
+    try {
+        const id = req.params.id; // Obtener la ID de la URL
+        const ofertaEliminada = await oferta.destroy({ where: { id_oferta: id } });
+
+        if (ofertaEliminada) {
+            res.json({ success: true, message: `Oferta con ID ${id} eliminada` });
+        } else {
+            res.json({ success: false, message: 'Oferta no encontrada' });
+        }
+    } catch (error) {
+        console.error('❌ Error al eliminar la oferta:', error);
+        res.json({ success: false, message: 'Error interno del servidor' });
+    }
+});
+
+app.put('/db/update/ofertas/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { ofert, inicio_oferta, final_oferta } = req.body;
+
+        console.log('Parametros recibidos: ', { id, ofert, inicio_oferta, final_oferta });
+
+        const inicioDate = new Date(inicio_oferta);
+        const finalDate = new Date(final_oferta);
+
+        console.log('Fechas convertidas: ', { inicioDate, finalDate });
+
+        if (isNaN(inicioDate.getTime()) || isNaN(finalDate.getTime())) {
+            return res.json({ success: false, message: 'Fechas inválidas' });
+        }
+
+        const ofertaExistente = await oferta.findOne({ where: { id_oferta: id } });
+
+        if (!ofertaExistente) {
+            return res.json({ success: false, message: 'Oferta no encontrada' });
+        }
+
+        console.log('Oferta encontrada: ', ofertaExistente.oferta);
+
+        let filas = await ofertaExistente.update({
+            OFERTA: ofert,
+            INICIO_OFERTA: inicioDate,
+            FINAL_OFERTA: finalDate
+        })
+
+        res.json({ success: true, message: `Oferta con ID ${id} actualizada` });
+    } catch (error) {
+        console.error('❌ Error al actualizar la oferta:', error);
+        res.json({ success: false, message: 'Error interno del servidor' });
+    }
+});
+
+app.post('/db/insert/ofertas/', async (req, res) => {
+    try {
+        const { id_coche, ofert, inicio_oferta, final_oferta } = req.body;
+
+        console.log('Datos recibidos para crear oferta:', { id_coche, ofert, inicio_oferta, final_oferta });
+
+        // Validación básica
+        if (!id_coche || !ofert || !inicio_oferta || !final_oferta) {
+            return res.json({ success: false, message: '⚠️ Faltan campos obligatorios' });
+        }
+
+        const inicioDate = new Date(inicio_oferta);
+        const finalDate = new Date(final_oferta);
+
+        if (isNaN(inicioDate.getTime()) || isNaN(finalDate.getTime())) {
+            return res.json({ success: false, message: '⚠️ Fechas inválidas' });
+        }
+
+        // Crear nueva oferta en la base de datos
+        const nuevaOferta = await oferta.create({
+            ID_COCHE: id_coche,
+            OFERTA: ofert,
+            INICIO_OFERTA: inicioDate,
+            FINAL_OFERTA: finalDate
+        });
+
+        console.log('✅ Oferta creada con éxito:', nuevaOferta);
+
+        res.json({ success: true, message: 'Oferta creada correctamente', oferta: nuevaOferta });
+    } catch (error) {
+        console.error('❌ Error al crear la oferta:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+});
+
+
+
+
 
 app.get('/db/categories', async (req, res) => {
     let categoriestext = []
