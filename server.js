@@ -660,6 +660,52 @@ app.get('/db/categories', async (req, res) => {
     res.json(categoriestext)
 })
 
+/*app.post('/srv/movimentos', async (req, res) => {
+    let moviment = req.body.mov
+    let usuari = req.body.usr
+    let pathMov = path.join('./../public/moviments',usuari)
+    let pathDefecte = path.join("C:\\Users\\Usuario\\IdeaProjects\\Backend-projecte-web-fase3\\public\\moviments",usuari)
+    let llistaArx = []
+    let mesRecent
+    let dataActual = new Date()
+    let ani = dataActual.getFullYear();
+    let mes = dataActual.getMonth() + 1;
+    let dia = dataActual.getDate();
+    let stringDataActual = dia+"-"+mes+"-"+ani;
+    let movimentActualString = "Data: "+dataActual + "\n" + "Moviment: " + moviment
+
+    if (!fs.existsSync("C:\\Users\\Usuario\\IdeaProjects\\Backend-projecte-web-fase3\\public\\moviments")) {
+        fs.mkdirSync("C:\\Users\\Usuario\\IdeaProjects\\Backend-projecte-web-fase3\\public\\moviments");
+    }
+
+    if (!fs.existsSync(pathMov)){
+        fs.mkdirSync(pathMov);
+    }
+    else{
+        llistaArx = fs.readdirSync(pathMov);
+        llistaArx.forEach(cat => {
+            if (path.extname(cat) === stringDataActual && path.extname(cat) === ".txt") {
+                mesRecent = cat;
+            }
+        })
+
+        if (mesRecent === ""){
+            mesRecent = stringDataActual
+        }
+
+        pathDefecte = pathDefecte+"\\"+mesRecent+".txt"
+
+
+
+        if (!fs.existsSync(pathMov)) {
+            fs.writeFileSync(pathMov, movimentActualString);
+        }
+        else {
+            fs.writeFileSync(pathDefecte, "\n"+movimentActualString);
+        }
+    }
+})
+*/
 app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
 
     try {
@@ -687,8 +733,6 @@ app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
             await cotxe_categoria.create({COTXE_ID: idcotxe.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID})
         }
 
-        let rutas = []
-
         if (req.files){
             let nimat = 1
 
@@ -709,10 +753,11 @@ app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
             }
         }
 
-        res.send(true)
+        res.json({estate:6})
     }
     catch (err){
-        res.send(false)
+        throw err
+        res.send({estate:7})
     }
 
 })
@@ -805,14 +850,45 @@ app.post('/srv/enviarformularisadisfacio',(req,res) => {
 
     if (fs.existsSync(rutaUsuari)){
        fs.writeFile(rutaArxiu,enquesta,(err)=>{
-           if (err) throw err;
+           if (err){
+               throw err
+               res.send(false)
+           }
+           else{
+               res.send(true)
+           }
        })
     }
     else{
         fs.mkdirSync(rutaUsuari);
         fs.writeFile(rutaArxiu,enquesta,(err)=>{
-            if (err) throw err;
+            if (err){
+                throw err
+                res.send(false)
+            }
+             else{
+                res.send(true)
+            }
         })
+    }
+
+})
+
+app.get('/db/existeixcotxe', async (req,res) => {
+
+    let cot = req.query.nomCotx
+
+    let resultat = await cotxe.findOne({
+        where:{
+            COTXE_NOM:cot
+        }
+    })
+
+    if (resultat > 1){
+        res.send(true)
+    }
+    else{
+        res.send(false)
     }
 
 })
