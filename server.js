@@ -709,58 +709,55 @@ app.get('/db/categories', async (req, res) => {
 app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
 
     try {
-        let formulari = req.body
+        let formulari = req.body;
 
-        let pujarproducte = await cotxe.create({COTXE_NOM: formulari.nom,COTXE_PREU: formulari.preu, COTXE_TEXT_OFERTA: formulari.textoferta })
-
-        let idcotxe = await cotxe.findOne({
-            attributes: ['COTXE_ID'],
+        let cotxeExistente = await cotxe.findOne({
             where: {
                 COTXE_NOM: formulari.nom
             }
-        })
+        });
 
-
-        let categ = JSON.parse(formulari.categories)
-
-        let categoriesid = await categoria.findAll({
-            attributes: ['CATEGORIA_ID','CATEGORIA_NOM'],
-        })
-
-        for (let cats of categ) {
-            let catego = categoriesid.find(c=> c.CATEGORIA_NOM === cats)
-            console.log(catego.CATEGORIA_ID)
-            await cotxe_categoria.create({COTXE_ID: idcotxe.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID})
+        if (cotxeExistente) {
+            return res.status(400).json({ estate: 8, message: 'El cotxe ja existeix a la base de dades.' });
         }
 
-        if (req.files){
-            let nimat = 1
+        let pujarproducte = await cotxe.create({
+            COTXE_NOM: formulari.nom,
+            COTXE_PREU: formulari.preu,
+            COTXE_TEXT_OFERTA: formulari.textoferta
+        });
 
-            for (let file of req.files){
-                let v  = "v"+nimat
+        let categ = JSON.parse(formulari.categories);
 
+        let categoriesid = await categoria.findAll({
+            attributes: ['CATEGORIA_ID', 'CATEGORIA_NOM'],
+        });
+
+        for (let cats of categ) {
+            let catego = categoriesid.find(c => c.CATEGORIA_NOM === cats);
+            await cotxe_categoria.create({ COTXE_ID: pujarproducte.COTXE_ID, CATEGORIA_ID: catego.CATEGORIA_ID });
+        }
+
+        if (req.files) {
+            let nimat = 1;
+
+            for (let file of req.files) {
+                let v = "v" + nimat;
                 let ruta = file.path.slice(29);
-
-                let renombrat = path.join('\\images',formulari.nom + v + file.path.slice(file.path.lastIndexOf('.')));
-
-                let rutaComp = ".\\..\\P2ProjecteBotigaA2\\public"
-
-                let rutabd = renombrat.replaceAll('\\','/')
-
-                await imatge.create({NUMERO_IMATGE: nimat, RUTA: rutabd, COTXE_ID: idcotxe.COTXE_ID})
-
-                nimat++
+                let renombrat = path.join('\\images', formulari.nom + v + file.path.slice(file.path.lastIndexOf('.')));
+                let rutabd = renombrat.replaceAll('\\', '/');
+                await imatge.create({ NUMERO_IMATGE: nimat, RUTA: rutabd, COTXE_ID: pujarproducte.COTXE_ID });
+                nimat++;
             }
         }
 
-        res.json({estate:6})
-    }
-    catch (err){
-        throw err
-        res.send({estate:7})
+        res.json({ estate: 6 });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ estate: 7, message: 'Error al processar la sol·licitud' });
     }
 
-})
+});
 
 const connection = dadesPerAccedirBD()
 
