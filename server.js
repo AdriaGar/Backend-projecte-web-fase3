@@ -904,7 +904,7 @@ const client = new AzureOpenAI(options);
 let bobbyInfo = "";
 
 async function carregarBobbyInfo() {
-    bobbyInfo = await fs.readFile('../P2ProjecteBotigaA2/public/fitxers/bobby_cotxes_info.txt', 'utf8');
+    bobbyInfo = await fs.readFile('public/bobby_cotxes_info.txt', 'utf8');
 }
 
 carregarBobbyInfo();
