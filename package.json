@@ -10,6 +10,7 @@
     "mysql2": "^3.14.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "openai": "^4.100.0",
     "path": "^0.12.7",
     "sequelize": "^6.37.6",
     "sequelize-auto": "^0.8.8"
