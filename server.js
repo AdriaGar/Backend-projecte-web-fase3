@@ -8,7 +8,8 @@ const axios = require('axios');
 const mysql = require('mysql2');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
+const { AzureOpenAI } = require("openai");
 const {dadesPerAccedirServidorCorreu} = require('./mail.server.access.data') ;
 const port = 3080;
 
@@ -892,3 +893,54 @@ app.get('/db/existeixcotxe', async (req,res) => {
 
 })
 
+const apiKey = "CuswKJVp7YU0oSVpuYUS78WjCyUqBjQNsWddFCqV0RgSeJK5owppJQQJ99BEACHYHv6XJ3w3AAAAACOGom3S";
+const apiVersion = "2024-04-01-preview";
+const endpoint = "https://david-maqky7wn-eastus2.cognitiveservices.azure.com/";
+const modelName = "gpt-4.1";
+const deployment = "gpt-4.1";
+const options = { endpoint, apiKey, deployment, apiVersion }
+
+const client = new AzureOpenAI(options);
+
+
+let bobbyInfo = "";
+
+async function carregarBobbyInfo() {
+    bobbyInfo = await fs.readFile('public/bobby_cotxes_info.txt', 'utf8');
+}
+
+carregarBobbyInfo();
+
+
+
+
+app.post('/chat', async (req, res) => {
+    try {
+        const { pregunta } = req.body;
+        if (!pregunta) return res.status(400).json({ error: "Falta la pregunta" });
+
+        const [rows] = await connection.query('SELECT * FROM cotxe');
+        let cotxesInfo = rows.map(row => JSON.stringify(row)).join('\n');
+
+        const systemMessage = `Ets un assistent d'una botiga de cotxes BobbyCotxes. Aquesta és la informació de la botiga i dels cotxes: \n\n${bobbyInfo}\n\n${cotxesInfo}\n\nRespon a la pregunta de l'usuari segons aquesta informació.`;
+
+        const messages = [
+            { role: "system", content: systemMessage },
+            { role: "user", content: pregunta }
+        ];
+
+        const response = await client.chat.completions.create({
+            model: deployment,
+            messages,
+            max_completion_tokens: 800,
+            temperature: 1,
+        });
+
+        const resposta = response.choices[0].message.content;
+        res.json({ resposta });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message || 'Error del servidor' });
+    }
+});

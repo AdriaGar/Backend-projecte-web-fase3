@@ -6,6 +6,6 @@ const dadesPerAccedirBD = () => {
         user: 'BOBBYSERVER',
         password: 'BO!Rz-e#l_Ns-&^uPzyMC(BBY',
         database: 'BOBBYCOTXES'
-    });
+    }).promise();
 }
 module.exports = {dadesPerAccedirBD}
