@@ -762,12 +762,12 @@ app.post('/db/pujaproducte', upload.array('imatges', 3), async (req, res) => {
 const connection = dadesPerAccedirBD()
 
 app.post('/historial/afegir-factura-detall', (req, res) => {
-    const { client_id, data_creacio, total_comanda, metode_pagament, cotxes } = req.body;
+    const { client_id, data_creacio, total_comanda, moneda, hash_transacio, metode_pagament, cotxes } = req.body;
 
-    const insercio1 = `INSERT INTO factura (client_id, data_creacio, total_comanda, metode_pagament) VALUES (?,?,?,?)`;
+    const insercio1 = `INSERT INTO factura (client_id, data_creacio, total_comanda, metode_pagament, moneda, hash_transacio) VALUES (?,?,?,?,?,?)`;
     const insercio2 = `INSERT INTO factura_detall (id_factura, id_cotxe, quantitat) VALUES (?,?,?)`;
 
-    connection.execute(insercio1, [client_id, data_creacio, total_comanda, metode_pagament], (err, result) => {
+        connection.execute(insercio1, [client_id, data_creacio, total_comanda, metode_pagament, moneda, hash_transacio], (err, result) => {
         if (err) {
             console.log('Error en inserir factura', err);
             return res.status(500).json({ error: 'Error en inserir factura', detalls: err });
@@ -795,6 +795,8 @@ app.get('/obtenir-historial', async (req, res) => {
                 f.DATA_CREACIO,
                 c.COTXE_NOM,
                 fd.QUANTITAT,
+                f.MONEDA,
+                f.HASH_TRANSACIO,
                 CASE 
                     WHEN o.ID_COCHE IS NOT NULL THEN 'Sí' 
                     ELSE 'No' 

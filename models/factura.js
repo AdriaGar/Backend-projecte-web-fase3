@@ -22,6 +22,14 @@ module.exports = function(sequelize, DataTypes) {
     METODE_PAGAMENT: {
       type: DataTypes.STRING(25),
       allowNull: true
+    },
+    MONEDA: {
+      type: DataTypes.STRING(25),
+      allowNull: true
+    },
+    HASH_TRANSACIO: {
+      type: DataTypes.STRING(70),
+      allowNull: true
     }
   }, {
     sequelize,
