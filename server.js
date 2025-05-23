@@ -845,7 +845,7 @@ app.post('/srv/enviarformularisadisfacio',(req,res) => {
 
     let enquesta = text1 + client + nom + cognom + correu + telefon + temps + text2 + sadisfacioAmbElProducte + serveiAlClient + recomenacio + comenatariPersonal
 
-    let rutaUsuari = 'C:\\Users\\Usuario\\IdeaProjects\\Backend-projecte-web-fase3\\public\\enquestes\\' + resultat.usuari
+    let rutaUsuari = 'enquestes\\' + resultat.usuari
     let rutaArxiu = rutaUsuari + '\\' + Date.now() + '.txt'
 
     if (fs.existsSync(rutaUsuari)){
