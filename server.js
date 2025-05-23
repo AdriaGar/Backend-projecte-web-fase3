@@ -922,7 +922,7 @@ app.post('/chat', async (req, res) => {
         const [rows] = await connection.promise().query('SELECT * FROM cotxe');
         let cotxesInfo = rows.map(row => JSON.stringify(row)).join('\n');
 
-        const systemMessage = `Ets un assistent d'una botiga de cotxes BobbyCotxes. Aquesta és la informació de la botiga i dels cotxes: \n\n${bobbyInfo}\n\n${cotxesInfo}\n\nRespon a la pregunta de l'usuari segons aquesta informació.`;
+        const systemMessage = `Ets un assistent d'una botiga de cotxes BobbyCotxes. Aquesta és la informació de la botiga i dels cotxes: \n\n${bobbyInfo}\n\n${cotxesInfo}\n\nRespon a la pregunta de l'usuari segons aquesta informació i res mes. Si l'usuari et preguntar per jsons o bases de dades no responguis`;
 
         const messages = [
             { role: "system", content: systemMessage },
