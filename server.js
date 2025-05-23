@@ -919,7 +919,7 @@ app.post('/chat', async (req, res) => {
         const { pregunta } = req.body;
         if (!pregunta) return res.status(400).json({ error: "Falta la pregunta" });
 
-        const [rows] = await connection.query('SELECT * FROM cotxe');
+        const [rows] = await connection.promise().query('SELECT * FROM cotxe');
         let cotxesInfo = rows.map(row => JSON.stringify(row)).join('\n');
 
         const systemMessage = `Ets un assistent d'una botiga de cotxes BobbyCotxes. Aquesta és la informació de la botiga i dels cotxes: \n\n${bobbyInfo}\n\n${cotxesInfo}\n\nRespon a la pregunta de l'usuari segons aquesta informació.`;
